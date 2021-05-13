@@ -2,7 +2,6 @@ package fr.modcraftmc.skyblock.listeners;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.sun.javafx.geom.Vec3d;
 import fr.modcraftmc.skyblock.SkyBlock;
 import fr.modcraftmc.skyblock.database.Connector;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,6 +9,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.TickEvent;
@@ -104,24 +104,24 @@ public class BlockListeners {
     }
 
     private Vector3d getCorrectPosition(Vector3d pos, int worldSize){
-        Vec3d vec3d = new Vec3d();
+        Vector3d vec3 = new Vector3d(0,0,0);
 
         if (Math.floor(Math.abs(pos.x)) >= worldSize/2){
-            vec3d.x = worldSize/2+0.999;
+            vec3.add(worldSize/2+0.999,0,0);
             if (pos.x < 0)
-                vec3d.x = vec3d.x*(-1)+1;
+                vec3 = new Vector3d(-vec3.x+1,0,0);
         } else {
-            vec3d.x = pos.x;
+            vec3.add(pos.x,0,0);
         }
 
         if (Math.floor(Math.abs(pos.z)) >= worldSize/2){
-            vec3d.z = worldSize/2+0.999;
+            vec3.add(0,0,worldSize/2+0.999);
             if (pos.z < 0)
-                vec3d.z = vec3d.z*(-1)+1;
+                vec3 = new Vector3d(vec3.x,0,-vec3.z+1);
         } else {
-            vec3d.z = pos.z;
+            vec3.add(0,0,pos.z);
         }
-        return new Vector3d(vec3d.x, pos.y, vec3d.z);
+        return new Vector3d(vec3.x, pos.y, vec3.z);
     }
 
     private boolean isInside(int worldSize, BlockPos pos){
