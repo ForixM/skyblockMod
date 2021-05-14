@@ -4,11 +4,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import fr.modcraftmc.skyblock.SkyBlock;
 import fr.modcraftmc.skyblock.database.Connector;
+import fr.modcraftmc.skyblock.util.Vector3d;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.BlockSnapshot;
@@ -96,7 +96,7 @@ public class BlockListeners {
                     if (isInside(size, playerLocation))
                         return;
                     System.out.println("isn't inside");
-                    Vector3d correctPlayerPosition = getCorrectPosition(player.position(), size);
+                    Vector3d correctPlayerPosition = getCorrectPosition(new Vector3d(player.getX(), player.getY(), player.getZ()), size);
                     player.teleportToWithTicket(correctPlayerPosition.x, correctPlayerPosition.y, correctPlayerPosition.z);
                 }
             }
@@ -104,24 +104,25 @@ public class BlockListeners {
     }
 
     private Vector3d getCorrectPosition(Vector3d pos, int worldSize){
-        Vector3d vec3 = new Vector3d(0,0,0);
+        Vector3d vec3d = new Vector3d(0,0,0);
+
 
         if (Math.floor(Math.abs(pos.x)) >= worldSize/2){
-            vec3.add(worldSize/2+0.999,0,0);
+            vec3d.x = worldSize/2+0.999;
             if (pos.x < 0)
-                vec3 = new Vector3d(-vec3.x+1,0,0);
+                vec3d.x = vec3d.x*(-1)+1;
         } else {
-            vec3.add(pos.x,0,0);
+            vec3d.x = pos.x;
         }
 
         if (Math.floor(Math.abs(pos.z)) >= worldSize/2){
-            vec3.add(0,0,worldSize/2+0.999);
+            vec3d.z = worldSize/2+0.999;
             if (pos.z < 0)
-                vec3 = new Vector3d(vec3.x,0,-vec3.z+1);
+                vec3d.z = vec3d.z*(-1)+1;
         } else {
-            vec3.add(0,0,pos.z);
+            vec3d.z = pos.z;
         }
-        return new Vector3d(vec3.x, pos.y, vec3.z);
+        return new Vector3d(vec3d.x, pos.y, vec3d.z);
     }
 
     private boolean isInside(int worldSize, BlockPos pos){
