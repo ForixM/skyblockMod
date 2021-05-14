@@ -52,10 +52,12 @@ public class BlockListeners {
                 String owner = world.getRegistryName().getPath();
                 JsonArray members = Connector.getMembers(owner);
                 System.out.println("members verif");
-                for (JsonElement member : members) {
-                    if (member.getAsString().equalsIgnoreCase(player.getDisplayName().getString())) {
-                        if (isInside(size, event.getPos()))
-                            return;
+                if (members != null) {
+                    for (JsonElement member : members) {
+                        if (member.getAsString().equalsIgnoreCase(player.getDisplayName().getString())) {
+                            if (isInside(size, event.getPos()))
+                                return;
+                        }
                     }
                 }
                 player.sendMessage(new StringTextComponent("pos: "+event.getPos()), player.getUUID());
