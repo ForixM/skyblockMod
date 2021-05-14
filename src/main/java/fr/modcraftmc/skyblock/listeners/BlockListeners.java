@@ -46,7 +46,7 @@ public class BlockListeners {
         System.out.println("block place event");
         RegistryKey<World> world = event.getEntity().getCommandSenderWorld().dimension();
         if (world.location().getNamespace().equalsIgnoreCase(SkyBlock.MOD_ID)) {
-            int size = SkyBlock.config.getIslandSize(world.getRegistryName().getPath());
+            int size = SkyBlock.config.getIslandSize(world.location().getPath());
             if (event.getEntity() instanceof PlayerEntity) {
                 ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
                 String owner = world.location().getPath();
