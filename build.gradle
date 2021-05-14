@@ -8,6 +8,7 @@ buildscript {
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
         classpath 'gradle.plugin.com.matthewprenger:CurseGradle:1.1.0'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.2'
     }
 }
 
@@ -15,6 +16,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'idea'
 apply plugin: 'maven-publish'
 apply plugin: 'com.matthewprenger.cursegradle'
+apply plugin: "com.github.johnrengelman.shadow"
 
 group = 'fr.modcraftmc'
 version = '1.0-SNAPSHOT'
@@ -114,13 +116,19 @@ repositories {
     }
 }
 
+configurations {
+    shade
+    compile.extendsFrom shade
+}
+
+
 dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
 
-    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.21'
+    shade group: 'mysql', name: 'mysql-connector-java', version: '8.0.21'
 
     //compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
 //    compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api")
@@ -156,6 +164,16 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 }
 
+shadowJar {
+    configurations = [ project.configurations.shade ]
+    classifier = 'shade'
+
+    dependencies {
+        exclude(dependency('com.google.code.gson:gson:.*'))
+    }
+}
+
+
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
     manifest {
@@ -172,3 +190,8 @@ jar {
 }
 
 jar.finalizedBy('reobfJar')
+jar.finalizedBy shadowJar
+
+reobf {
+    shadowJar {}
+}
