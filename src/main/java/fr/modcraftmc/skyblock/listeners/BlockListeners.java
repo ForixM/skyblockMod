@@ -43,7 +43,6 @@ public class BlockListeners {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlaceBlock(BlockEvent.EntityPlaceEvent event) {
-        System.out.println("block place event");
         RegistryKey<World> world = event.getEntity().getCommandSenderWorld().dimension();
         if (world.location().getNamespace().equalsIgnoreCase(SkyBlock.MOD_ID)) {
             int size = SkyBlock.config.getIslandSize(world.location().getPath());
@@ -51,7 +50,6 @@ public class BlockListeners {
                 ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
                 String owner = world.location().getPath();
                 JsonArray members = Connector.getMembers(owner);
-                System.out.println("members verif");
                 if (members != null) {
                     for (JsonElement member : members) {
                         if (member.getAsString().equalsIgnoreCase(player.getDisplayName().getString())) {
@@ -60,10 +58,8 @@ public class BlockListeners {
                         }
                     }
                 }
-                player.sendMessage(new StringTextComponent("pos: "+event.getPos()), player.getUUID());
                 if (owner.equalsIgnoreCase(player.getDisplayName().getString()) && isInside(size, event.getPos()))
                     return;
-                player.sendMessage(new StringTextComponent("Gros t'es à l'extérieur"), player.getUUID());
                 event.setResult(Event.Result.DENY);
                 event.setCanceled(true);
             } else {
