@@ -15,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.BlockEvent;
@@ -80,9 +81,8 @@ public class BlockListeners {
 
     @SubscribeEvent
     public void blockMoved(PistonEvent.Pre event){
-        PlayerEntity player = event.getWorld().getNearestPlayer(0,0,0,-1,null); //some magic to get a class that contain a world variable
-        if(player == null) return;
-        RegistryKey<World> world = player.getCommandSenderWorld().dimension();
+        ServerWorld serverWorld = (ServerWorld) event.getWorld();
+        RegistryKey<World> world = serverWorld.dimension();
         if (world.location().getNamespace().equalsIgnoreCase(SkyBlock.MOD_ID)) {
             int size = SkyBlock.config.getIslandSize(world.location().getPath());
             Direction dir = event.getDirection();
