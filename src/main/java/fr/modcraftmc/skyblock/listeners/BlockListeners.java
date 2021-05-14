@@ -49,7 +49,7 @@ public class BlockListeners {
             int size = SkyBlock.config.getIslandSize(world.getRegistryName().getPath());
             if (event.getEntity() instanceof PlayerEntity) {
                 ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
-                String owner = world.getRegistryName().getPath();
+                String owner = world.location().getPath();
                 JsonArray members = Connector.getMembers(owner);
                 System.out.println("members verif");
                 if (members != null) {
