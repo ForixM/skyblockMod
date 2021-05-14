@@ -10,6 +10,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.TickEvent;
@@ -55,8 +56,10 @@ public class BlockListeners {
                             return;
                     }
                 }
+                player.sendMessage(new StringTextComponent("pos: "+event.getPos()), player.getUUID());
                 if (owner.equalsIgnoreCase(player.getDisplayName().getString()) && isInside(size, event.getPos()))
                     return;
+                player.sendMessage(new StringTextComponent("Gros t'es à l'extérieur"), player.getUUID());
                 event.setResult(Event.Result.DENY);
                 event.setCanceled(true);
             } else {
@@ -105,7 +108,6 @@ public class BlockListeners {
 
     private Vector3d getCorrectPosition(Vector3d pos, int worldSize){
         Vector3d vec3d = new Vector3d(0,0,0);
-
 
         if (Math.floor(Math.abs(pos.x)) >= worldSize/2){
             vec3d.x = worldSize/2+0.999;
