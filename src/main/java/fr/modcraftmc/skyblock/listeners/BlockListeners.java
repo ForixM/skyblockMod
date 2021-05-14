@@ -5,8 +5,11 @@ import com.google.gson.JsonElement;
 import fr.modcraftmc.skyblock.SkyBlock;
 import fr.modcraftmc.skyblock.database.Connector;
 import fr.modcraftmc.skyblock.util.Vector3d;
+import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3f;
@@ -15,9 +18,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.event.world.PistonEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+
+import java.util.function.Predicate;
 
 public class BlockListeners {
 
@@ -68,6 +74,32 @@ public class BlockListeners {
                 }
                 event.setResult(Event.Result.DENY);
                 event.setCanceled(true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void blockMoved(PistonEvent.Pre event){
+        PlayerEntity player = event.getWorld().getNearestPlayer(0,0,0,-1,null); //some magic to get a class that contain a world variable
+        if(player == null) return;
+        RegistryKey<World> world = player.getCommandSenderWorld().dimension();
+        if (world.location().getNamespace().equalsIgnoreCase(SkyBlock.MOD_ID)) {
+            int size = SkyBlock.config.getIslandSize(world.location().getPath());
+            Direction dir = event.getDirection();
+            BlockPos pos = event.getPos();
+            switch (event.getDirection().getAxis()) {
+                case X:
+                    if (isInside(size, new BlockPos(pos.getX() + dir.getAxisDirection().getStep() * 2, pos.getY(), pos.getZ())))
+                        return;
+                    event.setCanceled(true);
+                case Z:
+                    if (isInside(size, new BlockPos(pos.getX(), pos.getY(), pos.getZ() + dir.getAxisDirection().getStep() * 2)))
+                        return;
+                    event.setCanceled(true);
+                case Y:
+                    return;
+                default:
+                    throw new Error("Someone's been tampering with the universe! it's minecraft who want to say that not me (refer to 'Direction' class)");
             }
         }
     }
