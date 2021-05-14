@@ -43,13 +43,15 @@ public class BlockListeners {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlaceBlock(BlockEvent.EntityPlaceEvent event) {
+        System.out.println("block place event");
         RegistryKey<World> world = event.getEntity().getCommandSenderWorld().dimension();
-        if (world.getRegistryName().getNamespace().equalsIgnoreCase(SkyBlock.MOD_ID)) {
+        if (world.location().getNamespace().equalsIgnoreCase(SkyBlock.MOD_ID)) {
             int size = SkyBlock.config.getIslandSize(world.getRegistryName().getPath());
             if (event.getEntity() instanceof PlayerEntity) {
                 ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
                 String owner = world.getRegistryName().getPath();
                 JsonArray members = Connector.getMembers(owner);
+                System.out.println("members verif");
                 for (JsonElement member : members) {
                     if (member.getAsString().equalsIgnoreCase(player.getDisplayName().getString())) {
                         if (isInside(size, event.getPos()))
