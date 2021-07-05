@@ -209,6 +209,3 @@ task copyToClient(type:Exec) {
     //on windows:
     commandLine "cmd", "/c", "copy", 'modcraftsb-1.0-SNAPSHOT.jar', 'C:\\Users\\forix\\AppData\\Roaming\\.minecraft\\mods'
 }
-
-build.finalizedBy(copyToServer)
-build.finalizedBy(copyToClient)
