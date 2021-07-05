@@ -93,6 +93,7 @@ public class PacketTeleportToIsland implements PacketBasic{
                                         buildIsland(destWorld);
                                         SkyBlock.config.createIsland(entity.getDisplayName().getString().toLowerCase());
                                         SkyBlock.LOGGER.info("Island builded");
+                                        //yes
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
