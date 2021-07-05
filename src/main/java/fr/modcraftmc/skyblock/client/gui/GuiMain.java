@@ -8,6 +8,7 @@ import com.feed_the_beast.mods.ftbguilibrary.widget.Theme;
 import com.feed_the_beast.mods.ftbguilibrary.widget.Widget;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import fr.modcraftmc.skyblock.SkyBlock;
+import fr.modcraftmc.skyblock.network.PacketTeleportToIsland;
 import fr.modcraftmc.skyblock.network.demands.GuiCommand;
 import fr.modcraftmc.skyblock.network.PacketHandler;
 import fr.modcraftmc.skyblock.network.PacketOpenGUI;
@@ -18,6 +19,8 @@ import net.minecraft.util.text.StringTextComponent;
 
 import java.util.Iterator;
 import java.util.Locale;
+
+import static fr.modcraftmc.skyblock.util.Constants.DISPLAY_NAME;
 
 public class GuiMain extends GuiBase {
 
@@ -36,14 +39,16 @@ public class GuiMain extends GuiBase {
             add(new SimpleTextButton(this, new StringTextComponent("Teleport to Island"), Icon.EMPTY) {
                 @Override
                 public void onClicked(MouseButton mouseButton) {
-                    PLAYER.sendMessage(new StringTextComponent("/skyblock home"), PLAYER.getUUID());
+                    PacketHandler.INSTANCE.sendToServer(new PacketTeleportToIsland(PLAYER.getDisplayName().getString()));
+//                    PLAYER.sendMessage(new StringTextComponent("/skyblock home"), PLAYER.getUUID());
                     GuiMain.this.closeGui();
                 }
             });
             add(new SimpleTextButton(this, new StringTextComponent("Settings"), Icon.EMPTY) {
                 @Override
                 public void onClicked(MouseButton mouseButton) {
-                    PacketHandler.INSTANCE.sendToServer(new PacketOpenGUI(Request.SETTINGS, null, GuiCommand.EMPTY));
+                    PacketHandler.INSTANCE.sendToServer(new PacketOpenGUI(Request.SETTINGS, DISPLAY_NAME, GuiCommand.EMPTY));
+                    closeGui();
                 }
             });
 
@@ -51,7 +56,8 @@ public class GuiMain extends GuiBase {
             add(new SimpleTextButton(this, new StringTextComponent("Create Island"), Icon.EMPTY) {
                 @Override
                 public void onClicked(MouseButton mouseButton) {
-                    PLAYER.sendMessage(new StringTextComponent("/skyblock home"), PLAYER.getUUID());
+                    PacketHandler.INSTANCE.sendToServer(new PacketTeleportToIsland(PLAYER.getDisplayName().getString()));
+//                    PLAYER.sendMessage(new StringTextComponent("/skyblock home"), PLAYER.getUUID());
                     GuiMain.this.closeGui();
                 }
             });
@@ -60,12 +66,13 @@ public class GuiMain extends GuiBase {
             @Override
             public void onClicked(MouseButton mouseButton) {
                 PacketHandler.INSTANCE.sendToServer(new PacketOpenGUI(Request.PLAYERISLANDS, null, GuiCommand.EMPTY));
+                closeGui();
             }
         });
         add(new SimpleTextButton(this, new StringTextComponent("Close"), Icon.EMPTY) {
             @Override
             public void onClicked(MouseButton mouseButton) {
-                GuiMain.this.closeGui();
+                GuiMain.this.closeGui(false);
             }
         });
     }

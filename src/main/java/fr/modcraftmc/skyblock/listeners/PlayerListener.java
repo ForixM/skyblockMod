@@ -28,7 +28,6 @@ public class PlayerListener {
     public void playerTickEvent(TickEvent.PlayerTickEvent event) {
         if (event.side.isClient()) {
             if (islandSize != -1) {
-                System.out.println("islandSize = " + islandSize);
                 for (int x = -(islandSize / 2); x < islandSize / 2 + 1; x += 2) {
                     for (int i = -2; i <= 2; i += 2) {
                         event.player.getCommandSenderWorld().addParticle(ParticleTypes.EFFECT, x, Math.floor(event.player.getY()) + i, islandSize / 2 + 1, 0, 0, 0);

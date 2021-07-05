@@ -11,6 +11,7 @@ import fr.modcraftmc.skyblock.network.PacketHandler;
 import fr.modcraftmc.skyblock.network.PacketModifyIslandInfo;
 import fr.modcraftmc.skyblock.network.PacketModifyPermission;
 import fr.modcraftmc.skyblock.network.demands.GuiCommand;
+import fr.modcraftmc.skyblock.util.IslandInfos;
 import net.minecraft.util.text.StringTextComponent;
 
 import static fr.modcraftmc.skyblock.util.Constants.DISPLAY_NAME;
@@ -32,7 +33,10 @@ public class PanelInfos extends Panel {
                 PanelInfos.this.islandName = PanelInfos.this.islandNameBox.getText();
                 PanelInfos.this.islandDescription = PanelInfos.this.islandDescriptionBox.getText();
                 PacketHandler.INSTANCE.sendToServer(new PacketModifyIslandInfo(PanelInfos.this.islandName, PanelInfos.this.islandDescription, ((GuiSettings)PanelInfos.this.parent).getIslandInfos().getOwner()));
-
+                IslandInfos islandInfos = ((GuiSettings)parent.parent).getIslandInfos();
+                GuiSettings guiSettings = ((GuiSettings)parent.parent);
+                guiSettings.getIslandInfos().setName(PanelInfos.this.islandNameBox.getText());
+                guiSettings.getIslandInfos().setDescription(PanelInfos.this.islandDescriptionBox.getText());
 //                if (((GuiSettings)parent).getIslandInfos().getOwner().equalsIgnoreCase(DISPLAY_NAME)) {
 //                    PacketHandler.INSTANCE.sendToServer(new PacketModifyIslandInfo(PanelInfos.this.islandName, PanelInfos.this.islandDescription, null, GuiCommand.EMPTY));
 //                } else {

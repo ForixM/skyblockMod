@@ -195,3 +195,20 @@ jar.finalizedBy shadowJar
 reobf {
     shadowJar {}
 }
+
+task copyToServer(type:Exec) {
+    workingDir './build/libs'
+
+    //on windows:
+    commandLine "cmd", "/c", "copy", 'modcraftsb-1.0-SNAPSHOT-shade.jar', 'D:\\minecraft servers\\modded\\1.16.5\\developement environment\\mods'
+}
+
+task copyToClient(type:Exec) {
+    workingDir './build/libs'
+
+    //on windows:
+    commandLine "cmd", "/c", "copy", 'modcraftsb-1.0-SNAPSHOT.jar', 'C:\\Users\\forix\\AppData\\Roaming\\.minecraft\\mods'
+}
+
+build.finalizedBy(copyToServer)
+build.finalizedBy(copyToClient)

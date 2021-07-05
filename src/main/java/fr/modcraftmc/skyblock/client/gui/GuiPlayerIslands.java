@@ -32,6 +32,7 @@ public class GuiPlayerIslands extends GuiBase {
                     ClickableTextButton island = new ClickableTextButton(playerIslands, new StringTextComponent(islandName), Icon.EMPTY) {
                         @Override
                         public void onClicked(MouseButton mouseButton) {
+                            GuiPlayerIslands.this.closeGui();
                             PacketHandler.INSTANCE.sendToServer(new PacketOpenGUI(Request.ISLANDINFOS, islandName, GuiCommand.NOTOWNER));
                         }
                     };
@@ -95,6 +96,7 @@ public class GuiPlayerIslands extends GuiBase {
         back = new SimpleTextButton(this, new StringTextComponent("Back"), Icon.EMPTY) {
             @Override
             public void onClicked(MouseButton mouseButton) {
+                closeGui();
                 new GuiMain(true);
             }
         };

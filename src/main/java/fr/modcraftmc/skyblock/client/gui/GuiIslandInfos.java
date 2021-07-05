@@ -8,6 +8,7 @@ import fr.modcraftmc.skyblock.SkyBlock;
 import fr.modcraftmc.skyblock.client.gui.widget.ClickableTextButton;
 import fr.modcraftmc.skyblock.network.PacketHandler;
 import fr.modcraftmc.skyblock.network.PacketOpenGUI;
+import fr.modcraftmc.skyblock.network.PacketTeleportToIsland;
 import fr.modcraftmc.skyblock.network.demands.GuiCommand;
 import fr.modcraftmc.skyblock.network.demands.Request;
 import fr.modcraftmc.skyblock.util.IslandInfos;
@@ -164,7 +165,8 @@ public class GuiIslandInfos extends GuiBase {
                 super.onClicked(mouseButton);
                 if (enabled) {
                     assert Minecraft.getInstance().player != null;
-                    Minecraft.getInstance().player.sendMessage(new StringTextComponent("/skyblock home "+islandInfos.getOwner()), Minecraft.getInstance().player.getUUID());
+                    PacketHandler.INSTANCE.sendToServer(new PacketTeleportToIsland(islandInfos.getOwner()));
+                    closeGui();
                 }
             }
         };
@@ -187,27 +189,35 @@ public class GuiIslandInfos extends GuiBase {
                     teleportToIsland.enabled = true;
                 }
             });
+            if (islandInfos.getOwner().equalsIgnoreCase(DISPLAY_NAME)){
+                teleportToIsland.enabled = true;
+            }
         }
 
         manageIsland = new ClickableTextButton(this, new StringTextComponent("Manage Island"), Icon.EMPTY) {
             @Override
             public void onClicked(MouseButton mouseButton) {
                 super.onClicked(mouseButton);
-//                if (enabled)
                 PacketHandler.INSTANCE.sendToServer(new PacketOpenGUI(Request.SETTINGS, islandInfos.getOwner(), GuiCommand.NOTOWNER));
+                closeGui();
             }
         };
         manageIsland.enabled = false;
-        islandInfos.getOfficiers().forEach((officer) -> {
-            if (officer.getAsString().equalsIgnoreCase(DISPLAY_NAME)){
-                manageIsland.enabled = true;
-            }
-        });
+        if (islandInfos.getOwner().equalsIgnoreCase(DISPLAY_NAME)){
+            manageIsland.enabled = true;
+        } else {
+            islandInfos.getOfficiers().forEach((officer) -> {
+                if (officer.getAsString().equalsIgnoreCase(DISPLAY_NAME)) {
+                    manageIsland.enabled = true;
+                }
+            });
+        }
 
         back = new ClickableTextButton(this, new StringTextComponent("Back"), Icon.EMPTY) {
             @Override
             public void onClicked(MouseButton mouseButton) {
                 super.onClicked(mouseButton);
+                GuiIslandInfos.this.closeGui();
                 PacketHandler.INSTANCE.sendToServer(new PacketOpenGUI(Request.PLAYERISLANDS, null, GuiCommand.EMPTY));
             }
         };

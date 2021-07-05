@@ -31,5 +31,6 @@ public class PacketHandler {
         INSTANCE.registerMessage(nextId(), PacketChangedDimension.class, PacketChangedDimension::toBytes, PacketChangedDimension::new, PacketChangedDimension::handle);
         INSTANCE.registerMessage(nextId(), PacketSetPublicIsland.class, PacketSetPublicIsland::toBytes, PacketSetPublicIsland::new, PacketSetPublicIsland::handle);
         INSTANCE.registerMessage(nextId(), PacketModifyPermission.class, PacketModifyPermission::toBytes, PacketModifyPermission::new, PacketModifyPermission::handle);
+        INSTANCE.registerMessage(nextId(), PacketTeleportToIsland.class, PacketTeleportToIsland::toBytes, PacketTeleportToIsland::new, PacketTeleportToIsland::handle);
     }
 }

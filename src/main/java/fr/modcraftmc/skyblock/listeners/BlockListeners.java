@@ -31,14 +31,25 @@ public class BlockListeners {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onBreakBlock(BlockEvent.BreakEvent event){
         RegistryKey<World> world = event.getPlayer().getCommandSenderWorld().dimension();
-        if (world.getRegistryName().getNamespace().equalsIgnoreCase(SkyBlock.MOD_ID)) {
-            String owner = world.getRegistryName().getPath();
+        if (world.location().getNamespace().equalsIgnoreCase(SkyBlock.MOD_ID)) {
+            String owner = world.location().getPath();
             JsonArray members = Connector.getMembers(owner);
-            int size = SkyBlock.config.getIslandSize(world.getRegistryName().getPath());
-            for (JsonElement member : members) {
-                if (member.getAsString().equalsIgnoreCase(event.getPlayer().getDisplayName().getString())) {
-                    if (isInside(size, event.getPos()))
-                        return;
+            JsonArray officers = Connector.getOfficiers(owner);
+            int size = SkyBlock.config.getIslandSize(world.location().getPath());
+            if (officers != null) {
+                for (JsonElement officer : officers) {
+                    if (officer.getAsString().equalsIgnoreCase(event.getPlayer().getDisplayName().getString())) {
+                        if (isInside(size, event.getPos()))
+                            return;
+                    }
+                }
+            }
+            if (members != null) {
+                for (JsonElement member : members) {
+                    if (member.getAsString().equalsIgnoreCase(event.getPlayer().getDisplayName().getString())) {
+                        if (isInside(size, event.getPos()))
+                            return;
+                    }
                 }
             }
             if (owner.equalsIgnoreCase(event.getPlayer().getDisplayName().getString()) && isInside(size, event.getPos()))
@@ -57,6 +68,15 @@ public class BlockListeners {
                 ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
                 String owner = world.location().getPath();
                 JsonArray members = Connector.getMembers(owner);
+                JsonArray officers = Connector.getOfficiers(owner);
+                if (officers != null){
+                    for (JsonElement officer : officers) {
+                        if (officer.getAsString().equalsIgnoreCase(player.getDisplayName().getString())) {
+                            if (isInside(size, event.getPos()))
+                                return;
+                        }
+                    }
+                }
                 if (members != null) {
                     for (JsonElement member : members) {
                         if (member.getAsString().equalsIgnoreCase(player.getDisplayName().getString())) {
@@ -107,7 +127,7 @@ public class BlockListeners {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void OnMultiblockPlaced(BlockEvent.EntityMultiPlaceEvent event){
         RegistryKey<World> world = event.getEntity().getCommandSenderWorld().dimension();
-        int size = SkyBlock.config.getIslandSize(world.getRegistryName().getPath());
+        int size = SkyBlock.config.getIslandSize(world.location().getPath());
         for (BlockSnapshot blockSnapshot : event.getReplacedBlockSnapshots()){
             if (!isInside(size, blockSnapshot.getPos())){
                 event.setResult(Event.Result.DENY);

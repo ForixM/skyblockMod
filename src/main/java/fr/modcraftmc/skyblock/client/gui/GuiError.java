@@ -94,7 +94,7 @@ public class GuiError extends GuiBase {
         error4.setPosAndSize(10, 40, 100, 10);
         error5.setPosAndSize(10, 50, 100, 10);
         error6.setPosAndSize(10, 60, 100, 10);
-        back.setPosAndSize(this.width/2-25, 70, 50, 20);
+        back.setPosAndSize(this.width/2-25, 72, 50, 20);
     }
 
     @Override
@@ -109,7 +109,8 @@ public class GuiError extends GuiBase {
         back = new SimpleTextButton(this, new StringTextComponent("Back"), Icon.EMPTY) {
             @Override
             public void onClicked(MouseButton mouseButton) {
-                PacketHandler.INSTANCE.sendToServer(new PacketOpenGUI(Request.MAIN, null, GuiCommand.EMPTY));
+//                PacketHandler.INSTANCE.sendToServer(new PacketOpenGUI(Request.MAIN, null, GuiCommand.EMPTY));
+                closeGui();
             }
         };
 

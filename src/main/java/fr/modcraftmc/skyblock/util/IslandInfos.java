@@ -169,4 +169,20 @@ public class IslandInfos {
     public boolean isPublic() {
         return isPublic;
     }
+
+    @Override
+    public String toString() {
+        return "IslandInfos{" +
+                "name='" + name + '\'' +
+                ", owner='" + owner + '\'' +
+                ", description='" + description + '\'' +
+                ", officiers=" + officiers +
+                ", members=" + members +
+                ", guests=" + guests +
+                ", bans=" + bans +
+                ", spawn=" + spawn +
+                ", size=" + size +
+                ", isPublic=" + isPublic +
+                '}';
+    }
 }

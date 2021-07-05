@@ -27,7 +27,9 @@ public class PanelConfig extends Panel {
         setSpawn = new SimpleTextButton(this, new StringTextComponent("Set spawn"), Icon.EMPTY) {
             @Override
             public void onClicked(MouseButton mouseButton) {
-                PacketHandler.INSTANCE.sendToServer(new PacketSetSpawn(DISPLAY_NAME));
+                GuiSettings guiSettings = (GuiSettings)PanelConfig.this.parent;
+                String owner = guiSettings.getIslandInfos().getOwner();
+                PacketHandler.INSTANCE.sendToServer(new PacketSetSpawn(owner));
             }
         };
         setPublic = new ClickableTextButton(this, new StringTextComponent("Public Island"), Icon.EMPTY) {

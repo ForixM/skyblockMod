@@ -1,11 +1,11 @@
 package fr.modcraftmc.skyblock.network;
 
 import com.google.common.collect.ImmutableList;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.mojang.serialization.Lifecycle;
 import fr.modcraftmc.skyblock.SkyBlock;
 import fr.modcraftmc.skyblock.commands.skyblock.Home;
-import fr.modcraftmc.skyblock.network.demands.GuiCommand;
-import fr.modcraftmc.skyblock.network.demands.Request;
 import fr.modcraftmc.skyblock.schematic.SchemReader;
 import fr.modcraftmc.skyblock.world.Region;
 import net.minecraft.entity.Entity;
@@ -31,7 +31,6 @@ import net.minecraft.world.storage.SaveFormat;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.ITeleporter;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.network.NetworkDirection;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
@@ -64,99 +63,135 @@ public class PacketTeleportToIsland implements PacketBasic{
     @Override
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ServerPlayerEntity playerEntity = ctx.get().getSender();
-            if (SkyBlock.config.haveIsland(destination)) {
-                if (SkyBlock.config.isOfficier(destination, playerEntity.getDisplayName().getString()) || SkyBlock.config.isMember(destination, playerEntity.getDisplayName().getString()) || SkyBlock.config.isGuest(destination, playerEntity.getDisplayName().getString())) {
-                    ServerWorld serverWorld;
-                    Map<RegistryKey<World>, ServerWorld> map = SkyBlock.DEDICATED_SERVER.forgeGetWorldMap();
-                    RegistryKey<World> skyblock_world = RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(SkyBlock.MOD_ID, playerEntity.getDisplayName().getString().toLowerCase()));
-                    if (map.containsKey(skyblock_world)) {
-                        serverWorld = map.get(skyblock_world);
-                    } else {
-                        SkyBlock.LOGGER.info("Registring new dimension");
-                        serverWorld = createAndRegisterWorldAndDimension(SkyBlock.DEDICATED_SERVER, map, skyblock_world, Home::createDimension);
-                    }
-                    playerEntity.changeDimension(serverWorld, new ITeleporter() {
-                        @Override
-                        public Entity placeEntity(Entity entity, ServerWorld currentWorld, ServerWorld destWorld, float yaw, Function<Boolean, Entity> repositionEntity) {
-                            Entity repositionedEntity = repositionEntity.apply(false);
-                            repositionedEntity.teleportToWithTicket(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ());
-//                    if (finalSpawnIsland) {
-//                        try {
-//                            buildIsland(destWorld);
-//                            SkyBlock.config.createIsland(entity.getDisplayName().getString().toLowerCase());
-//                            SkyBlock.LOGGER.info("Island builded");
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-                            try {
-                                Vector3d location = SkyBlock.config.getSpawnLocation(entity.getDisplayName().getString().toLowerCase());
-                                playerEntity.teleportToWithTicket(location.x(), location.y(), location.z());
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            return repositionedEntity;
+            PlayerEntity playerEntity = null;
+            if (ctx.get().getSender() instanceof PlayerEntity) {
+                if (destination.equalsIgnoreCase(ctx.get().getSender().getDisplayName().getString())) {
+                    playerEntity = ctx.get().getSender();
+                    ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity) playerEntity;
+                    if (SchemReader.islandReferenceExist(new File(SkyBlock.CONFIG_DIR + "/island.schematic"))) {
+                        boolean spawnIsland = !SkyBlock.config.haveIsland(playerEntity.getDisplayName().getString().toLowerCase());
+
+                        RegistryKey<World> skyblock_world = RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(SkyBlock.MOD_ID, serverPlayerEntity.getDisplayName().getString().toLowerCase()));
+                        ServerWorld serverWorld;
+
+                        Map<RegistryKey<World>, ServerWorld> map = SkyBlock.DEDICATED_SERVER.forgeGetWorldMap();
+                        if (map.containsKey(skyblock_world)) {
+                            serverWorld = map.get(skyblock_world);
+                        } else {
+                            SkyBlock.LOGGER.info("Registring new dimension");
+                            serverWorld = createAndRegisterWorldAndDimension(SkyBlock.DEDICATED_SERVER, map, skyblock_world, Home::createDimension);
                         }
-                    });
+
+                        boolean finalSpawnIsland = spawnIsland;
+                        serverPlayerEntity.changeDimension(serverWorld, new ITeleporter() {
+                            @Override
+                            public Entity placeEntity(Entity entity, ServerWorld currentWorld, ServerWorld destWorld, float yaw, Function<Boolean, Entity> repositionEntity) {
+                                Entity repositionedEntity = repositionEntity.apply(false);
+                                repositionedEntity.setPos(serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ());
+                                if (finalSpawnIsland) {
+                                    try {
+                                        buildIsland(destWorld);
+                                        SkyBlock.config.createIsland(entity.getDisplayName().getString().toLowerCase());
+                                        SkyBlock.LOGGER.info("Island builded");
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                try {
+                                    Vector3d location = SkyBlock.config.getSpawnLocation(entity.getDisplayName().getString().toLowerCase());
+                                    serverPlayerEntity.teleportToWithTicket(location.x(), location.y(), location.z());
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                return repositionedEntity;
+                            }
+                        });
+                    } else {
+                        serverPlayerEntity.sendMessage(new StringTextComponent("Reference island doesn't exist. Please contact an Administrator."), serverPlayerEntity.getUUID());
+                    }
                 } else {
-                    PacketHandler.INSTANCE.sendTo(new PacketOpenGUI(Request.ERROR, "Tu n'as pas accès à cette Île", GuiCommand.EMPTY), playerEntity.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
-                    playerEntity.sendMessage(new StringTextComponent("Tu n'as pas accès à cette Ile"), playerEntity.getUUID());
+                    teleportToPlayerSkyblock(ctx);
                 }
-            } else {
-                PacketHandler.INSTANCE.sendTo(new PacketOpenGUI(Request.ERROR, "Ce joueur ne possède pas d'île", GuiCommand.EMPTY), playerEntity.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
             }
         });
-//        ctx.get().enqueueWork(() -> {
-//            ServerPlayerEntity playerEntity = null;
-//            if (ctx.get().getSender() != null) {
-//                playerEntity = ctx.get().getSender();
-//                ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity) playerEntity;
-//                if (SchemReader.islandReferenceExist(new File(SkyBlock.CONFIG_DIR+"/island.schematic"))) {
-//                    boolean spawnIsland = !SkyBlock.config.haveIsland(playerEntity.getDisplayName().getString().toLowerCase());
-//
-//                    RegistryKey<World> skyblock_world = RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(SkyBlock.MOD_ID, serverPlayerEntity.getDisplayName().getString().toLowerCase()));
-//                    ServerWorld serverWorld;
-//
-//                    Map<RegistryKey<World>, ServerWorld> map = SkyBlock.DEDICATED_SERVER.forgeGetWorldMap();
-//                    if (map.containsKey(skyblock_world)) {
-//                        serverWorld = map.get(skyblock_world);
-//                    } else {
-//                        SkyBlock.LOGGER.info("Registring new dimension");
-//                        serverWorld = createAndRegisterWorldAndDimension(SkyBlock.DEDICATED_SERVER, map, skyblock_world, Home::createDimension);
-//                    }
-//
-//                    boolean finalSpawnIsland = spawnIsland;
-//                    serverPlayerEntity.changeDimension(serverWorld, new ITeleporter() {
-//                        @Override
-//                        public Entity placeEntity(Entity entity, ServerWorld currentWorld, ServerWorld destWorld, float yaw, Function<Boolean, Entity> repositionEntity) {
-//                            Entity repositionedEntity = repositionEntity.apply(false);
-//                            //@TODO not sure for setPos because before that was setPosAndUpdate
-//                            repositionedEntity.setPos(serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ());
-//                            if (finalSpawnIsland) {
-//                                try {
-//                                    buildIsland(destWorld);
-//                                    SkyBlock.config.createIsland(entity.getDisplayName().getString().toLowerCase());
-//                                    SkyBlock.LOGGER.info("Island builded");
-//                                } catch (Exception e) {
-//                                    e.printStackTrace();
-//                                }
-//                            }
-//                            try {
-//                                Vector3d location = SkyBlock.config.getSpawnLocation(entity.getDisplayName().getString().toLowerCase());
-//                                serverPlayerEntity.teleportToWithTicket(location.x(), location.y(), location.z());
-//                            } catch (Exception e) {
-//                                e.printStackTrace();
-//                            }
-//                            return repositionedEntity;
-//                        }
-//                    });
-//                } else {
-//                    serverPlayerEntity.sendMessage(new StringTextComponent("Reference island doesn't exist. Please contact an Administrator."), serverPlayerEntity.getUUID());
-//                }
-//            }
-//        });
         ctx.get().setPacketHandled(true);
+    }
+
+    private int teleportToPlayerSkyblock(Supplier<NetworkEvent.Context> ctx){
+        if (ctx.get().getSender() instanceof PlayerEntity){
+            ServerPlayerEntity player = (ServerPlayerEntity) ctx.get().getSender();
+
+            try {
+                JsonArray members = SkyBlock.config.getMembers(destination.toLowerCase());
+                for (JsonElement element : members){
+                    if (element.getAsString().equalsIgnoreCase(player.getDisplayName().getString())){
+                        if (SkyBlock.config.haveIsland(destination.toLowerCase())) {
+                            RegistryKey<World> skyblock_world = RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(SkyBlock.MOD_ID, destination.toLowerCase()));
+                            Map<RegistryKey<World>, ServerWorld> map = SkyBlock.DEDICATED_SERVER.forgeGetWorldMap();
+
+                            ServerWorld serverWorld = map.get(skyblock_world);
+                            if (serverWorld == null)
+                                serverWorld = createAndRegisterWorldAndDimension(SkyBlock.DEDICATED_SERVER, map, skyblock_world, Home::createDimension);
+                            try {
+                                player.changeDimension(serverWorld, new ITeleporter() {
+                                    @Override
+                                    public Entity placeEntity(Entity entity, ServerWorld currentWorld, ServerWorld destWorld, float yaw, Function<Boolean, Entity> repositionEntity) {
+                                        Entity repositionedEntity = repositionEntity.apply(false);
+                                        repositionedEntity.setPos(player.getX(), player.getY(), player.getZ());
+                                        try {
+                                            Vector3d location = SkyBlock.config.getSpawnLocation(destination.toLowerCase());
+                                            player.teleportToWithTicket(location.x(), location.y(), location.z());
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                        return repositionedEntity;
+                                    }
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                return -1;
+                            }
+                        }
+                        player.sendMessage(new StringTextComponent("Tu as été téléporté à l'île de: " + destination), player.getUUID());
+                        return 0;
+                    }
+                }
+                if (SkyBlock.config.isPublic(destination) && !SkyBlock.config.isBanned(destination, player.getDisplayName().getString())){
+                    RegistryKey<World> skyblock_world = RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(SkyBlock.MOD_ID, destination.toLowerCase()));
+                    Map<RegistryKey<World>, ServerWorld> map = SkyBlock.DEDICATED_SERVER.forgeGetWorldMap();
+
+                    ServerWorld serverWorld = map.get(skyblock_world);
+                    if (serverWorld == null)
+                        serverWorld = createAndRegisterWorldAndDimension(SkyBlock.DEDICATED_SERVER, map, skyblock_world, Home::createDimension);
+                    try {
+                        player.changeDimension(serverWorld, new ITeleporter() {
+                            @Override
+                            public Entity placeEntity(Entity entity, ServerWorld currentWorld, ServerWorld destWorld, float yaw, Function<Boolean, Entity> repositionEntity) {
+                                Entity repositionedEntity = repositionEntity.apply(false);
+                                repositionedEntity.setPos(player.getX(), player.getY(), player.getZ());
+                                try {
+                                    Vector3d location = SkyBlock.config.getSpawnLocation(destination.toLowerCase());
+                                    player.teleportToWithTicket(location.x(), location.y(), location.z());
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                return repositionedEntity;
+                            }
+                        });
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return -1;
+                    }
+                }
+                player.sendMessage(new StringTextComponent("Tu n'as pas acces a cette ile"), player.getUUID());
+            } catch (NullPointerException e){
+                player.sendMessage(new StringTextComponent("Cette personne ne possède pas d'île"), player.getUUID());
+            }
+        } else {
+            SkyBlock.LOGGER.info("Va rêver sale fou");
+        }
+        return 0;
     }
 
     private static void buildIsland(World world){

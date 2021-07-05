@@ -59,7 +59,7 @@ public class PanelSelection extends Panel {
         add(new SimpleTextButton(this, new StringTextComponent("Back"), Icon.EMPTY) {
             @Override
             public void onClicked(MouseButton mouseButton) {
-                //parent.closeGui();
+                parent.closeGui();
                 if (guiParent.getIslandInfos().getOwner().equalsIgnoreCase(DISPLAY_NAME))
                     new GuiMain(true);
                 else
