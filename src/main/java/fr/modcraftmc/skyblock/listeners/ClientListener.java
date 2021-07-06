@@ -20,9 +20,7 @@ public class ClientListener {
 
     @SubscribeEvent
     public static void onInitGui(GuiScreenEvent.InitGuiEvent.Post event){
-        SkyBlock.LOGGER.info("onInitGui");
         Screen screen = event.getGui();
-        SkyBlock.LOGGER.info("Screen="+screen);
         if (screen instanceof InventoryScreen || screen instanceof CreativeScreen){
             event.addWidget(new Button(5, 20, 50, 20, new StringTextComponent("Skyblock"), b -> {
                 screen.onClose();

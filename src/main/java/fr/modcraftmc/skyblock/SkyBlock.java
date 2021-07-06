@@ -49,7 +49,6 @@ public class SkyBlock
     public static final Logger LOGGER = LogManager.getLogger();
     public static final String MOD_ID = "modcraftsb";
     public static final File CONFIG_DIR = new File(FMLPaths.CONFIGDIR.get().toFile().toString()+"/"+MOD_ID);
-//    public static final File GAME_DIR = new File(FMLPaths.GAMEDIR.get().toFile().toString());
     public static final ResourceLocation SKYBLOCK_DIM_TYPE = new ResourceLocation(MOD_ID, "skyblock_dim");
     public static Connector config;
 
@@ -64,19 +63,9 @@ public class SkyBlock
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         modEventBus.addListener(this::setup);
         modEventBus.addListener(this::clientSetup);
-//        modEventBus.addListener(this::onServerStarting);
-//        modEventBus.addListener(this::changedDimension);
-//        modEventBus.addListener(this::onPlayerLogin);
-//        modEventBus.addListener(this::registerDimensions);
-//        modEventBus.addListener(this::onKeyInput);
-//        modEventBus.addListener(this::onRespawnPlayer);
-
-//        DimensionInit.MOD_DIMENSION.register(modEventBus);
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new BlockListeners());
         MinecraftForge.EVENT_BUS.register(new PlayerListener());
-//        if (FMLEnvironment.dist == Dist.CLIENT)
-//            MinecraftForge.EVENT_BUS.register(new ClientListener());
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ConfigHandler.server_config);
         ConfigHandler.loadConfig(ConfigHandler.server_config, FMLPaths.CONFIGDIR.get().resolve("modcraftsb-server.toml").toString());
@@ -89,24 +78,12 @@ public class SkyBlock
         instance = this;
     }
 
-//    @SubscribeEvent
-//    public void onBlockBreak(BlockEvent.BreakEvent event){
-//        RegistryKey<World> dim = event.getPlayer().getCommandSenderWorld().getDimensionKey();
-//        LOGGER.info("dim = " + dim);
-//        event.getPlayer().sendMessage(new StringTextComponent("tu as cassé ce block: "+event.getState().getBlock().getTranslationKey()), event.getPlayer().getUniqueID());
-//    }
-
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event){
         if (skyblock.consumeClick()){
             PacketHandler.INSTANCE.sendToServer(new PacketOpenGUI(Request.MAIN, null, GuiCommand.EMPTY));
         }
     }
-
-//    @SubscribeEvent
-//    public void changedDimension(PlayerEvent.PlayerChangedDimensionEvent e){
-//        e.getPlayer().sendMessage(new StringTextComponent("Tu as atteris dans une dimension: "+e.getEntity().getCommandSenderWorld().getDimensionKey()), e.getPlayer().getUniqueID());
-//    }
 
     private void clientSetup(final FMLClientSetupEvent event){
         skyblock = new KeyBinding("key.modcraftsb.openmenu", KeyEvent.VK_G, "key.modcraftsb.category");
@@ -117,15 +94,6 @@ public class SkyBlock
         PacketHandler.registerMessages();
     }
 
-    //@SubscribeEvent
-    public void registerDimensions(final RegistryEvent event) {
-//        if (Dimension.func_236062_a_(SkyBlock.SKYBLOCK_DIM_TYPE))
-//        if (DimensionType.byName(SkyBlock.SKYBLOCK_DIM_TYPE) == null)
-//            DimensionManager.registerDimension(SkyBlock.SKYBLOCK_DIM_TYPE, DimensionInit.SKYBLOCK_DIM.get(), null, true);
-//        SkyBlock.LOGGER.info("Dimensions Registered!");
-    }
-
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event) {
         DEDICATED_SERVER = event.getServer();

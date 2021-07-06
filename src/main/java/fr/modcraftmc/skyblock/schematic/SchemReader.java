@@ -48,20 +48,6 @@ public class SchemReader {
                 return region;
             } else {
 
-                /*byte[] blocks = nbt.getByteArray("Blocks");
-                int i = 0;
-                for (int x = 0; x < width; x++){
-                    for (int y = 0; y < height; y++){
-                        for (int z = 0; z < length; z++){
-                            int index = (y * length + z) * width + x;
-                            i++;
-                            BlockState state = Block.getStateById((int)(blocks[index] & 0xFF));
-                            region.addBlock(new BlockPos(x, y, z), state, false);
-                        }
-                    }
-                }
-                System.out.println(i+" Blocks loaded");*/
-
                 return null;
             }
         } catch (IOException e) {

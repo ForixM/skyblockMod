@@ -3,6 +3,7 @@ package fr.modcraftmc.skyblock.client.gui;
 import com.feed_the_beast.mods.ftbguilibrary.icon.Icon;
 import com.feed_the_beast.mods.ftbguilibrary.utils.MouseButton;
 import com.feed_the_beast.mods.ftbguilibrary.widget.*;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import fr.modcraftmc.skyblock.SkyBlock;
 import fr.modcraftmc.skyblock.client.gui.widget.ClickableTextButton;
 import fr.modcraftmc.skyblock.network.demands.GuiCommand;
@@ -80,15 +81,18 @@ public class GuiPlayerIslands extends GuiBase {
                 }
             }
         };
+        setSize(193, 166);
         this.openGui();
     }
 
     @Override
     public void addWidgets() {
-        playerIslands.setPosAndSize(10, 10, this.width-20, this.height);
+        System.out.println("this.width = " + this.width);
+        System.out.println("this.height = " + this.height);
+        playerIslands.setPosAndSize(4, 4, 119, 158);
         add(playerIslands);
         scrollBar = new PanelScrollBar(this, playerIslands);
-        scrollBar.setPosAndSize(this.width-20, 10, 10, this.height-10);
+        scrollBar.setPosAndSize(123, 4, 10, 158);
         scrollBar.setMaxValue(islands.size()*20);
         scrollBar.setValue(0);
         scrollBar.setScrollStep(1);
@@ -100,9 +104,14 @@ public class GuiPlayerIslands extends GuiBase {
                 new GuiMain(true);
             }
         };
-        back.setPosAndSize(170, 10, 50, 20);
+        back.setPosAndSize(139, 4, 50, 20);
         add(back);
     }
 
+    private final Icon icon = Icon.getIcon(SkyBlock.MOD_ID+":textures/gui/player_islands.png");
 
+    @Override
+    public void drawBackground(MatrixStack matrixStack, Theme theme, int x, int y, int w, int h) {
+        icon.draw(x, y, w, h);
+    }
 }

@@ -25,11 +25,10 @@ import static fr.modcraftmc.skyblock.util.Constants.DISPLAY_NAME;
 public class GuiMain extends GuiBase {
 
     private final boolean haveIsland;
-    private final ClientPlayerEntity PLAYER = Minecraft.getInstance().player;
 
     public GuiMain(boolean haveIsland){
         this.haveIsland = haveIsland;
-        setSize(225, 150);
+        setSize(256, 256);
         this.openGui();
     }
 
@@ -39,8 +38,7 @@ public class GuiMain extends GuiBase {
             add(new SimpleTextButton(this, new StringTextComponent("Teleport to Island"), Icon.EMPTY) {
                 @Override
                 public void onClicked(MouseButton mouseButton) {
-                    PacketHandler.INSTANCE.sendToServer(new PacketTeleportToIsland(PLAYER.getDisplayName().getString()));
-//                    PLAYER.sendMessage(new StringTextComponent("/skyblock home"), PLAYER.getUUID());
+                    PacketHandler.INSTANCE.sendToServer(new PacketTeleportToIsland(DISPLAY_NAME));
                     GuiMain.this.closeGui();
                 }
             });
@@ -56,8 +54,7 @@ public class GuiMain extends GuiBase {
             add(new SimpleTextButton(this, new StringTextComponent("Create Island"), Icon.EMPTY) {
                 @Override
                 public void onClicked(MouseButton mouseButton) {
-                    PacketHandler.INSTANCE.sendToServer(new PacketTeleportToIsland(PLAYER.getDisplayName().getString()));
-//                    PLAYER.sendMessage(new StringTextComponent("/skyblock home"), PLAYER.getUUID());
+                    PacketHandler.INSTANCE.sendToServer(new PacketTeleportToIsland(DISPLAY_NAME));
                     GuiMain.this.closeGui();
                 }
             });
@@ -77,17 +74,6 @@ public class GuiMain extends GuiBase {
         });
     }
 
-//    @Override
-//    public void closeGui() {
-//        Minecraft mc = Minecraft.getInstance();
-//        if (mc.player != null) {
-//            mc.player.closeContainer();
-//            if (mc.currentScreen == null) {
-//                mc.setGameFocused(true);
-//            }
-//        }
-//    }
-
     private final Icon icon = Icon.getIcon(SkyBlock.MOD_ID+":textures/gui/skyblock_menu.png");
 
     @Override
@@ -100,11 +86,11 @@ public class GuiMain extends GuiBase {
         super.alignWidgets();
         Iterator<Widget> widgets = this.widgets.iterator();
         Widget widget;
-        int y = 50;
+        int y = 85;
         while (widgets.hasNext()){
             widget = widgets.next();
             widget.setPosAndSize(40, y, width-80, 20);
-            y+=25;
+            y+=28;
         }
     }
 }

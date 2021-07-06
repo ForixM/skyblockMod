@@ -143,14 +143,12 @@ public class BlockListeners {
             return;
         if (Connector.isConnected()) {
             for (ServerPlayerEntity player : SkyBlock.DEDICATED_SERVER.getPlayerList().getPlayers()) {
-                if (player.getCommandSenderWorld().dimension().location().getNamespace().equalsIgnoreCase("modcraftsb")) {
+                if (player.getCommandSenderWorld().dimension().location().getNamespace().equalsIgnoreCase(SkyBlock.MOD_ID)) {
                     PlayerListener.sendDimensionPacket(player);
                     BlockPos playerLocation = player.blockPosition();
                     int size = SkyBlock.config.getIslandSize(player.getCommandSenderWorld().dimension().location().getPath());
-//                    System.out.println("size = " + size);
                     if (isInside(size, playerLocation))
                         return;
-                    System.out.println("isn't inside");
                     Vector3d correctPlayerPosition = getCorrectPosition(new Vector3d(player.getX(), player.getY(), player.getZ()), size);
                     player.teleportToWithTicket(correctPlayerPosition.x, correctPlayerPosition.y, correctPlayerPosition.z);
                 }

@@ -109,7 +109,6 @@ public class GuiError extends GuiBase {
         back = new SimpleTextButton(this, new StringTextComponent("Back"), Icon.EMPTY) {
             @Override
             public void onClicked(MouseButton mouseButton) {
-//                PacketHandler.INSTANCE.sendToServer(new PacketOpenGUI(Request.MAIN, null, GuiCommand.EMPTY));
                 closeGui();
             }
         };

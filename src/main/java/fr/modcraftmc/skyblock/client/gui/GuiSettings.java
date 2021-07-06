@@ -70,33 +70,12 @@ public class GuiSettings extends GuiBase {
         this.openGui();
     }
 
-//    public GuiSettings(boolean isPublic){
-//        this (SelectedMenu.CONFIGURATION);
-//        panelConfig = new PanelConfig(this, isPublic);
-//        panelConfig.setPosAndSize(140, 15, (posX+width-20)-140, this.height-10);
-//        this.openGui();
-//    }
-
-//    public GuiSettings(HashMap<String, PERMISSIONS> playerList){
-//        this(SelectedMenu.PERMISSION);
-//        permission = new PanelPermission(this, playerList);
-//        permission.setPosAndSize(140, 15, (posX+width-20)-140, this.height-10);
-//        this.openGui();
-//    }
-
     public GuiSettings(HashMap<String, PERMISSIONS> playerList, String selectedPlayer, double scrollStep){
         this(SelectedMenu.PERMISSION);
         permission = new PanelPermission(this, playerList, selectedPlayer, scrollStep);
         permission.setPosAndSize(140, 15, (posX+width-20)-140, this.height-10);
         this.openGui();
     }
-
-//    public GuiSettings(String islandName, String islandDescription){
-//        this(SelectedMenu.INFOS);
-//        infos = new PanelInfos(this, islandName, islandDescription);
-//        infos.setPosAndSize(130, 10, 200, 150);
-//        this.openGui();
-//    }
 
     @Override
     public void addWidgets() {
@@ -109,7 +88,6 @@ public class GuiSettings extends GuiBase {
                 add(infos);
                 break;
             case PERMISSION:
-                System.out.println("islandInfos = " + islandInfos);
                 permission = new PanelPermission(this, generatePlayerList(islandInfos.getMembers(), islandInfos.getGuests(), islandInfos.getOfficiers(), islandInfos.getBans()));
                 permission.setPosAndSize(140, 15, 140, this.height-10);
                 add(permission);
