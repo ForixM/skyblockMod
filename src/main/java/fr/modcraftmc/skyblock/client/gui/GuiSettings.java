@@ -88,7 +88,7 @@ public class GuiSettings extends GuiBase {
                 add(infos);
                 break;
             case PERMISSION:
-                permission = new PanelPermission(this, generatePlayerList(islandInfos.getMembers(), islandInfos.getGuests(), islandInfos.getOfficiers(), islandInfos.getBans()));
+                permission = new PanelPermission(this, generatePlayerList(islandInfos.getMembers(), islandInfos.getGuests(), islandInfos.getOfficers(), islandInfos.getBans()));
                 permission.setPosAndSize(140, 15, 140, this.height-10);
                 add(permission);
                 break;

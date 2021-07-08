@@ -19,7 +19,6 @@ import net.minecraft.world.DimensionType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -37,8 +36,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.awt.event.KeyEvent;
 import java.io.File;
-
-import static fr.modcraftmc.skyblock.util.Constants.DISPLAY_NAME;
 
 @Mod(SkyBlock.MOD_ID)
 @Mod.EventBusSubscriber(modid = SkyBlock.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)

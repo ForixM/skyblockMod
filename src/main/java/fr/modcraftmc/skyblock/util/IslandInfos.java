@@ -142,7 +142,7 @@ public class IslandInfos {
         return description;
     }
 
-    public JsonArray getOfficiers() {
+    public JsonArray getOfficers() {
         return officiers;
     }
 

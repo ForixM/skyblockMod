@@ -86,7 +86,7 @@ public class GuiIslandInfos extends GuiBase {
         officers = new Panel(this) {
             @Override
             public void addWidgets() {
-                islandInfos.getOfficiers().forEach((player) -> add(new TextField(officers).setText(player.getAsString())));
+                islandInfos.getOfficers().forEach((player) -> add(new TextField(officers).setText(player.getAsString())));
             }
 
             @Override
@@ -184,7 +184,7 @@ public class GuiIslandInfos extends GuiBase {
                     teleportToIsland.enabled = true;
                 }
             });
-            islandInfos.getOfficiers().forEach((officer) -> {
+            islandInfos.getOfficers().forEach((officer) -> {
                 if (officer.getAsString().equalsIgnoreCase(DISPLAY_NAME)) {
                     teleportToIsland.enabled = true;
                 }
@@ -206,7 +206,7 @@ public class GuiIslandInfos extends GuiBase {
         if (islandInfos.getOwner().equalsIgnoreCase(DISPLAY_NAME)){
             manageIsland.enabled = true;
         } else {
-            islandInfos.getOfficiers().forEach((officer) -> {
+            islandInfos.getOfficers().forEach((officer) -> {
                 if (officer.getAsString().equalsIgnoreCase(DISPLAY_NAME)) {
                     manageIsland.enabled = true;
                 }

@@ -363,7 +363,7 @@ public class Connector {
         return null;
     }
 
-    public static JsonArray getOfficiers(String owner){
+    public static JsonArray getOfficers(String owner){
         try {
             resultSet = statement.executeQuery("SELECT officers, owner FROM islands");
             while (resultSet.next()){
@@ -558,7 +558,7 @@ public class Connector {
     }
 
     public boolean isOfficier(String owner, String player){
-        JsonArray officiers = getOfficiers(owner);
+        JsonArray officiers = getOfficers(owner);
         for (JsonElement officier : officiers){
             if (officier.getAsString().equalsIgnoreCase(player))
                 return true;

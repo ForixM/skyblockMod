@@ -185,7 +185,7 @@ public class PacketOpenGUI implements PacketBasic{
         islandInfos.append(Connector.getBanneds(owner)).append(SEPARATOR);
         islandInfos.append(Connector.getGuests(owner)).append(SEPARATOR);
         islandInfos.append(Connector.getMembers(owner)).append(SEPARATOR);
-        islandInfos.append(Connector.getOfficiers(owner)).append(SEPARATOR);
+        islandInfos.append(Connector.getOfficers(owner)).append(SEPARATOR);
         islandInfos.append(SkyBlock.config.isPublic(owner)).append(SEPARATOR);
         islandInfos.append(SkyBlock.config.getIslandSize(owner)).append(SEPARATOR);
         islandInfos.append(SkyBlock.config.getSpawnLocation(owner)).append(SEPARATOR);
@@ -197,7 +197,7 @@ public class PacketOpenGUI implements PacketBasic{
         if (player.equals(sender)){
             return prepareIslandInfosMessage(sender);
         } else {
-            JsonArray officers = Connector.getOfficiers(player);
+            JsonArray officers = Connector.getOfficers(player);
             for (JsonElement officier : officers){
                 if (officier.getAsString().equalsIgnoreCase(sender)){
                     return prepareIslandInfosMessage(player);
